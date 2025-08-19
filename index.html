@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gulf Electronic</title>
+    <style>
+        /* Welcome Animation */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+        
+        .welcome-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out forwards;
+            text-align: center;
+        }
+        
+        .welcome-subtitle {
+            color: #ecf0f1;
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        body.modal-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .language-switcher {
+            position: relative;
+            z-index: 1001;
+        }
+        
+        .language-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .language-options {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1002;
+            min-width: 100px;
+        }
+        
+        .language-options.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 8px 15px;
+            cursor: pointer;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .language-option:hover {
+            background: #f1f1f1;
+        }
+        
+        /* Main Container */
+        .container {
+            width: 100%;
+            padding: 0;
+            margin: 0 auto;
+        }
+        
+        /* Search Section */
+        .search-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0;
+            padding: 12px 15px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 60px;
+            z-index: 900;
+        }
+        
+        #searchInput {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .search-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2ecc71;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        /* Categories Scroll */
+        .categories-scroll-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 15px;
+            background: white;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 110px;
+            z-index: 850;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .categories-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .categories-list {
+            display: inline-flex;
+            gap: 8px;
+            list-style: none;
+        }
+        
+        .category-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 20px;
+            background: #f1f1f1;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .category-item.active {
+            background: #2c3e50;
+            color: white;
+        }
+        
+        /* Main Content Layout */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 0 15px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 150px;
+            background: #f8f9fa;
+            z-index: 800;
+            padding-top: 5px;
+        }
+        
+        .tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-left: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .tab.active {
+            background: #2c3e50;
+            color: white;
+            border-color: #2c3e50;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .product-image-container {
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+            transform-origin: center center;
+        }
+        
+        .product-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 12px;
+        }
+        
+        .product-name {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-quality, .product-price, .product-favorite {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 0.95rem;
+        }
+        
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+        
+        .favorite-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #ccc;
+            padding: 0;
+        }
+        
+        .favorite-btn.favorited {
+            color: #e74c3c;
+        }
+        
+        /* Favorites Section */
+        #favoritesContainer {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .favorites-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        
+        .favorites-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .favorite-item {
+            display: flex;
+            background: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            align-items: center;
+        }
+        
+        .favorite-item-image {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+        }
+        
+        .favorite-item-info {
+            flex: 1;
+            padding: 8px;
+        }
+        
+        .favorite-item-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .favorite-item-category {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-bottom: 4px;
+        }
+        
+        .favorite-item-price {
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 0.9rem;
+        }
+        
+        .favorite-item-remove {
+            padding: 4px 8px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+        
+        /* No Results/Favorites */
+        .no-results {
+            text-align: center;
+            padding: 30px 15px;
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        
+        /* Image Modal */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            touch-action: pinch-zoom;
+        }
+        
+        .image-modal.show {
+            display: flex;
+        }
+        
+        .modal-image-container {
+            max-width: 95%;
+            max-height: 95%;
+            position: relative;
+            touch-action: none;
+        }
+        
+        .modal-image {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            cursor: zoom-in;
+            transform-origin: center center;
+            transition: transform 0.3s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2001;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 2001;
+        }
+        
+        .zoom-btn, .rotate-btn {
+            background: rgba(255,255,255,0.8);
+            color: #333;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Contact Information */
+        .contact-info {
+            position: relative;
+        }
+        
+        .contact-btn {
+            padding: 6px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        /* Contact Page Styles */
+        .contact-page {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 15px;
+            background: white;
+            min-height: 100vh;
+            display: none;
+        }
+        
+        .contact-info-box {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .info-value {
+            font-size: 0.9rem;
+        }
+        
+        /* Back Button */
+        #backButton {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c3e50;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 480px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .welcome-logo {
+                font-size: 3rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Overlay -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-logo">GULF ELECTRONIC</div>
+        <div class="welcome-subtitle" id="welcomeSubtitle">ہماری دکان میں خوش آمدید</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="language-switcher">
+            <button class="language-btn" id="languageBtn">
+                <span id="currentLanguage">اردو</span> ▼
+            </button>
+            <div class="language-options" id="languageOptions">
+                <div class="language-option" data-lang="en">English</div>
+                <div class="language-option" data-lang="ur">اردو</div>
+            </div>
+        </div>
+        
+        <div class="logo-container">
+            <div class="logo" id="logo">گلف الیکٹرانک</div>
+        </div>
+        
+        <div class="contact-info">
+            <button class="contact-btn" id="contactBtn">رابطہ</button>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="نام سے تلاش کریں...">
+        <button id="searchButton" class="search-btn">تلاش کریں</button>
+    </div>
+    
+    <!-- Categories Scroll -->
+    <div class="categories-scroll-container">
+        <ul class="categories-list" id="categoriesList">
+            <!-- Categories will be populated here -->
+        </ul>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="content" id="allProductsTab">تمام مصنوعات</div>
+                <div class="tab" data-tab="favorites">میرے پسندیدہ</div>
+            </div>
+            
+            <!-- Content Display Area -->
+            <div id="contentTab" class="tab-content active">
+                <div id="contentDisplay">
+                    <!-- Products will be displayed here -->
+                </div>
+            </div>
+            
+            <!-- Favorites Display Area -->
+            <div id="favoritesTab" class="tab-content">
+                <div id="favoritesContainer">
+                    <h2 class="favorites-title">میرے پسندیدہ آئٹمز</h2>
+                    <div class="favorites-list" id="favoritesList">
+                        <!-- Favorite items will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <button class="close-modal" id="closeModal">×</button>
+        <div class="modal-image-container">
+            <img src="" alt="" class="modal-image" id="modalImage">
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="zoomIn">+</button>
+                <button class="zoom-btn" id="zoomOut">-</button>
+                <button class="zoom-btn" id="resetZoom">⟲</button>
+                <button class="rotate-btn" id="rotateLeft">↺</button>
+                <button class="rotate-btn" id="rotateRight">↻</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contactPage" class="contact-page">
+        <h2 id="contactPageTitle">رابطہ کی معلومات</h2>
+        <div class="contact-info-box">
+            <div class="info-item">
+                <div class="info-label" id="nameLabel">نام:</div>
+                <div class="info-value" id="nameValue">علی رضا</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label" id="emailLabel">ای میل:</div>
+                <div class="info-value">ali.raza@example.com</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label" id="phoneLabel">فون:</div>
+                <div class="info-value">+92 300 1234567</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label" id="addressLabel">پتہ:</div>
+                <div class="info-value" id="addressValue">123 مارکیٹ روڈ، لاہور، پاکستان</div>
+            </div>
+        </div>
+        <button id="backButton" class="search-btn">واپس جائیں</button>
+    </div>
+
+    <script>
+        // =============================================
+        // DATA STORAGE AND INITIALIZATION
+        // =============================================
+        
+        /**
+         * This object stores all the website content.
+         */
+        let websiteContent = {
+            
+            
+            "کیپسیٹر": [
+                {name: "1uf50v", description: "اعلی معیار کا کیپسیٹر", id: "cap1", 
+                 image: "1uf 50v.jpg", 
+                 quality: "اعلی"},
+                {name: "10uf 50v", description: "درمیانہ معیار کا کیپسیٹر", id: "cap2", 
+                 image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500", 
+                 quality: "درمیانہ"}
+            ]
+        };
+        
+        // English version of content
+        const englishContent = {
+            "Capacitors": [
+                {name: "1uf50v", description: "High quality capacitor", id: "cap1", 
+                 image: "1uf 50v.jpg", 
+                 quality: "High",},
+                {name: "10uf 50v", description: "Medium quality capacitor", id: "cap2", 
+                 image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500", 
+                 quality: "Medium"}
+            ]
+        };
+        
+        // Contact information translations
+        const contactTranslations = {
+            en: {
+                name: "Ali Raza",
+                address: "123 Market Road, Lahore, Pakistan"
+            },
+            ur: {
+                name: "علی رضا",
+                address: "123 مارکیٹ روڈ، لاہور، پاکستان"
+            }
+        };
+        
+        // Object to store favorites
+        let favorites = {};
+        
+        // Current language (default to Urdu)
+        let currentLanguage = 'ur';
+        
+        // Store scroll position before opening modal
+        let scrollPosition = 0;
+        
+        // Translations
+        const translations = {
+            en: {
+                logo: "GULF ELECTRONIC",
+                allProducts: "All Products",
+                myFavorites: "My Favorites",
+                searchPlaceholder: "Search by name...",
+                searchButton: "Search",
+                contact: "Contact",
+                noFavorites: "You have no favorite items yet.",
+                categories: "Categories",
+                noResults: "No results found for your search.",
+                name: "Name",
+                image: "Image",
+                quality: "Quality",
+                price: "Price",
+                favorite: "Favorite",
+                contactInfo: "Contact Information",
+                email: "Email",
+                phone: "Phone",
+                address: "Address",
+                back: "Go Back",
+                contactPageTitle: "Contact Information",
+                welcomeSubtitle: "Welcome to our store"
+            },
+            ur: {
+                logo: "گلف الیکٹرانک",
+                allProducts: "تمام مصنوعات",
+                myFavorites: "میرے پسندیدہ",
+                searchPlaceholder: "نام سے تلاش کریں...",
+                searchButton: "تلاش کریں",
+                contact: "رابطہ",
+                noFavorites: "آپ کے پاس ابھی تک کوئی پسندیدہ آئٹم نہیں ہے۔",
+                categories: "اقسام",
+                noResults: "آپ کی تلاش کے لیے کوئی نتائج نہیں ملے۔",
+                name: "نام",
+                image: "تصویر",
+                quality: "معیار",
+                price: "قیمت",
+                favorite: "پسندیدہ",
+                contactInfo: "رابطہ کی معلومات",
+                email: "ای میل",
+                phone: "فون",
+                address: "پتہ",
+                back: "واپس جائیں",
+                contactPageTitle: "رابطہ کی معلومات",
+                welcomeSubtitle: "ہماری دکان میں خوش آمدید"
+            }
+        };
+        
+        // =============================================
+        // DOM ELEMENT REFERENCES
+        // =============================================
+        const logo = document.getElementById('logo');
+        const languageBtn = document.getElementById('languageBtn');
+        const languageOptions = document.getElementById('languageOptions');
+        const currentLanguageText = document.getElementById('currentLanguage');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const contentDisplay = document.getElementById('contentDisplay');
+        const favoritesList = document.getElementById('favoritesList');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const categoriesList = document.getElementById('categoriesList');
+        const allProductsTab = document.getElementById('allProductsTab');
+        const contactBtn = document.getElementById('contactBtn');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        const zoomIn = document.getElementById('zoomIn');
+        const zoomOut = document.getElementById('zoomOut');
+        const resetZoom = document.getElementById('resetZoom');
+        const rotateLeft = document.getElementById('rotateLeft');
+        const rotateRight = document.getElementById('rotateRight');
+        const contactPage = document.getElementById('contactPage');
+        const backButton = document.getElementById('backButton');
+        const welcomeOverlay = document.getElementById('welcomeOverlay');
+        const welcomeSubtitle = document.getElementById('welcomeSubtitle');
+        const nameValue = document.getElementById('nameValue');
+        const addressValue = document.getElementById('addressValue');
+        
+        // =============================================
+        // INITIALIZATION FUNCTION
+        // =============================================
+        
+        /**
+         * Initializes the website by displaying all content
+         * and setting up event listeners.
+         */
+        function initializeWebsite() {
+            // Set Urdu as default language
+            currentLanguage = 'ur';
+            document.body.classList.add('rtl');
+            document.body.setAttribute('dir', 'rtl');
+            
+            // Load favorites from localStorage and convert to Urdu if needed
+            loadFavorites();
+            convertFavoritesToUrdu();
+            
+            // Show welcome animation
+            showWelcomeAnimation();
+            
+            // Display all products by default
+            displayAllProducts();
+            updateFavoritesList();
+            populateCategories();
+            setupEventListeners();
+            translatePage();
+        }
+        
+        /**
+         * Converts favorites to Urdu if they were saved in English
+         */
+        function convertFavoritesToUrdu() {
+            const newFavorites = {};
+            
+            for (const itemId in favorites) {
+                // Find the item in Urdu content
+                for (const category in websiteContent) {
+                    const item = websiteContent[category].find(i => i.id === itemId);
+                    if (item) {
+                        newFavorites[itemId] = {
+                            name: item.name,
+                            description: item.description,
+                            category: category,
+                            image: item.image,
+                            quality: item.quality,
+                            price: item.price
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            favorites = newFavorites;
+            saveFavorites();
+        }
+        
+        /**
+         * Shows the welcome animation and then fades out
+         */
+        function showWelcomeAnimation() {
+            // Update welcome subtitle based on language
+            welcomeSubtitle.textContent = translations[currentLanguage].welcomeSubtitle;
+            
+            // Hide welcome overlay after animation completes
+            setTimeout(() => {
+                welcomeOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    welcomeOverlay.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }, 1000);
+            }, 3000);
+        }
+        
+        // =============================================
+        // LANGUAGE FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Sets up language switcher functionality
+         */
+        function setupLanguageSwitcher() {
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageOptions.classList.toggle('show');
+            });
+            
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    currentLanguage = lang;
+                    localStorage.setItem('language', lang);
+                    currentLanguageText.textContent = lang === 'en' ? 'English' : 'اردو';
+                    languageOptions.classList.remove('show');
+                    translatePage();
+                    
+                    // Update RTL/LTR direction and content
+                    if (lang === 'ur') {
+                        document.body.classList.add('rtl');
+                        document.body.setAttribute('dir', 'rtl');
+                        websiteContent = {
+                            "کیپسیٹر": [
+                                {name: "1uf50v", description: "اعلی معیار کا کیپسیٹر", id: "cap1", 
+                                 image: "1uf 50v.jpg", 
+                                 quality: "اعلی"},
+                                {name: "10uf 50v", description: "درمیانہ معیار کا کیپسیٹر", id: "cap2", 
+                                 image: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500", 
+                                 quality: "درمیانہ"}
+                                
+                            ]
+                        };
+                    } else {
+                        document.body.classList.remove('rtl');
+                        document.body.setAttribute('dir', 'ltr');
+                        websiteContent = englishContent;
+                    }
+                    
+                    // Update contact information
+                    updateContactInfo(lang);
+                    
+                    // Update the favorites to match the new language
+                    updateFavoritesForNewLanguage(lang);
+                    
+                    // Update the display
+                    if (allProductsTab.classList.contains('active')) {
+                        displayAllProducts();
+                    } else {
+                        updateFavoritesList();
+                    }
+                    populateCategories();
+                });
+            });
+            
+            // Close language options when clicking outside
+            document.addEventListener('click', function() {
+                languageOptions.classList.remove('show');
+            });
+        }
+        
+        /**
+         * Updates contact information based on language
+         * @param {string} lang - The language ('en' or 'ur')
+         */
+        function updateContactInfo(lang) {
+            nameValue.textContent = contactTranslations[lang].name;
+            addressValue.textContent = contactTranslations[lang].address;
+        }
+        
+        /**
+         * Updates favorites to match the new language when language is changed
+         * @param {string} newLanguage - The new language ('en' or 'ur')
+         */
+        function updateFavoritesForNewLanguage(newLanguage) {
+            const newFavorites = {};
+            const sourceContent = newLanguage === 'ur' ? websiteContent : englishContent;
+            
+            // Find each favorite in the new language content
+            for (const itemId in favorites) {
+                for (const category in sourceContent) {
+                    const item = sourceContent[category].find(i => i.id === itemId);
+                    if (item) {
+                        newFavorites[itemId] = {
+                            name: item.name,
+                            description: item.description,
+                            category: category,
+                            image: item.image,
+                            quality: item.quality,
+                            price: item.price
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            favorites = newFavorites;
+            saveFavorites();
+        }
+        
+        /**
+         * Translates the page elements
+         */
+        function translatePage() {
+            const lang = translations[currentLanguage];
+            
+            // Update all text elements
+            logo.textContent = lang.logo;
+            document.querySelector('[data-tab="content"]').textContent = lang.allProducts;
+            document.querySelector('[data-tab="favorites"]').textContent = lang.myFavorites;
+            searchInput.placeholder = lang.searchPlaceholder;
+            searchButton.textContent = lang.searchButton;
+            contactBtn.textContent = lang.contact;
+            document.querySelector('.favorites-title').textContent = lang.myFavorites;
+            
+            // Update contact page if visible
+            if (contactPage.style.display === 'block') {
+                document.getElementById('contactPageTitle').textContent = lang.contactPageTitle;
+                document.getElementById('nameLabel').textContent = lang.name + ':';
+                document.getElementById('emailLabel').textContent = lang.email + ':';
+                document.getElementById('phoneLabel').textContent = lang.phone + ':';
+                document.getElementById('addressLabel').textContent = lang.address + ':';
+                backButton.textContent = lang.back;
+            }
+        }
+        
+        // =============================================
+        // FAVORITES FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Loads favorites from localStorage
+         */
+        function loadFavorites() {
+            const savedFavorites = localStorage.getItem('websiteFavorites');
+            if (savedFavorites) {
+                favorites = JSON.parse(savedFavorites);
+            } else {
+                favorites = {};
+            }
+        }
+        
+        /**
+         * Saves favorites to localStorage
+         */
+        function saveFavorites() {
+            localStorage.setItem('websiteFavorites', JSON.stringify(favorites));
+        }
+        
+        /**
+         * Toggles an item's favorite status
+         * @param {string} itemId - The ID of the item to toggle
+         */
+        function toggleFavorite(itemId) {
+            if (favorites[itemId]) {
+                delete favorites[itemId];
+            } else {
+                // Find the item in our content to get its details
+                for (const category in websiteContent) {
+                    const item = websiteContent[category].find(i => i.id === itemId);
+                    if (item) {
+                        favorites[itemId] = {
+                            name: item.name,
+                            description: item.description,
+                            category: category,
+                            image: item.image,
+                            quality: item.quality,
+                            price: item.price
+                        };
+                        break;
+                    }
+                }
+            }
+            saveFavorites();
+            updateFavoritesList();
+            
+            // Update the favorite buttons in the content display
+            const favoriteButtons = document.querySelectorAll(`.favorite-btn[data-id="${itemId}"]`);
+            favoriteButtons.forEach(btn => {
+                btn.classList.toggle('favorited', favorites[itemId] !== undefined);
+                btn.innerHTML = favorites[itemId] ? '♥' : '♡';
+            });
+        }
+        
+        /**
+         * Updates the favorites list display
+         */
+        function updateFavoritesList() {
+            favoritesList.innerHTML = '';
+            
+            if (Object.keys(favorites).length === 0) {
+                favoritesList.innerHTML = `<div class="no-results">${translations[currentLanguage].noFavorites}</div>`;
+                return;
+            }
+            
+            for (const itemId in favorites) {
+                const item = favorites[itemId];
+                const favoriteItem = document.createElement('div');
+                favoriteItem.className = 'favorite-item fade-in';
+                
+                favoriteItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="favorite-item-image">
+                    <div class="favorite-item-info">
+                        <div class="favorite-item-name">${item.name}</div>
+                        <div class="favorite-item-category">${item.category}</div>
+                        <div class="favorite-item-price">${item.price}</div>
+                    </div>
+                    <button class="favorite-btn favorited" data-id="${itemId}">♥</button>
+                `;
+                
+                // Add click event to the favorite button
+                const favBtn = favoriteItem.querySelector('.favorite-btn');
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(itemId);
+                });
+                
+                // Add click event to open image
+                const favImage = favoriteItem.querySelector('.favorite-item-image');
+                favImage.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openImageModal(item.image);
+                });
+                
+                favoritesList.appendChild(favoriteItem);
+            }
+        }
+        
+        // =============================================
+        // TAB FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Handles tab switching
+         * @param {Event} e - The click event
+         */
+        function handleTabClick(e) {
+            const tabId = e.target.getAttribute('data-tab');
+            
+            // Update tab styling
+            tabs.forEach(tab => tab.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            // Update content visibility
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+            
+            // If All Products tab is clicked, show all products
+            if (tabId === 'content') {
+                displayAllProducts();
+            } else {
+                updateFavoritesList();
+            }
+        }
+        
+        // =============================================
+        // CATEGORIES FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Populates the categories list
+         */
+        function populateCategories() {
+            categoriesList.innerHTML = '';
+            
+            // Add "All Categories" option
+            const allCategories = document.createElement('li');
+            allCategories.className = 'category-item active';
+            allCategories.textContent = translations[currentLanguage].allProducts;
+            allCategories.addEventListener('click', () => {
+                // Remove active class from all categories
+                document.querySelectorAll('.category-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                // Add active class to this category
+                allCategories.classList.add('active');
+                // Display all products
+                displayAllProducts();
+            });
+            categoriesList.appendChild(allCategories);
+            
+            // Add other categories
+            for (const category in websiteContent) {
+                const li = document.createElement('li');
+                li.className = 'category-item';
+                li.textContent = category;
+                li.addEventListener('click', () => {
+                    // Remove active class from all categories
+                    document.querySelectorAll('.category-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    // Add active class to this category
+                    li.classList.add('active');
+                    // Display category content
+                    displayCategoryContent(category);
+                });
+                categoriesList.appendChild(li);
+            }
+        }
+        
+        /**
+         * Displays content for a specific category
+         * @param {string} category - The category to display
+         */
+        function displayCategoryContent(category) {
+            if (websiteContent[category]) {
+                contentDisplay.innerHTML = '';
+                createProductsGrid(category, websiteContent[category]);
+            }
+        }
+        
+        /**
+         * Displays all products regardless of category
+         */
+        function displayAllProducts() {
+            contentDisplay.innerHTML = '';
+            
+            // Combine all products from all categories
+            let allProducts = [];
+            for (const category in websiteContent) {
+                allProducts = allProducts.concat(websiteContent[category]);
+            }
+            
+            if (allProducts.length > 0) {
+                createProductsGrid(translations[currentLanguage].allProducts, allProducts);
+            } else {
+                contentDisplay.innerHTML = `<p class="no-results">${translations[currentLanguage].noResults}</p>`;
+            }
+        }
+        
+        // =============================================
+        // PRODUCT DISPLAY FUNCTIONS
+        // =============================================
+        
+        /**
+         * Creates a grid of products
+         * @param {string} category - The category name
+         * @param {Array} items - Array of items in the category
+         */
+        function createProductsGrid(category, items) {
+            const grid = document.createElement('div');
+            grid.className = 'products-grid';
+            
+            if (items.length === 0) {
+                grid.innerHTML = `<p class="no-results">${translations[currentLanguage].noResults}</p>`;
+                contentDisplay.appendChild(grid);
+                return;
+            }
+            
+            items.forEach(item => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card fade-in';
+                
+                productCard.innerHTML = `
+                    <div class="product-image-container">
+                        <img src="${item.image}" alt="${item.name}" class="product-image" data-id="${item.id}">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">${item.name}</h3>
+                        <div class="product-quality">
+                            <span>${translations[currentLanguage].quality}:</span>
+                            <span>${item.quality}</span>
+                        </div>
+                        <div class="product-price">
+                            <span>${translations[currentLanguage].price}:</span>
+                            <span>${item.price}</span>
+                        </div>
+                        <div class="product-favorite">
+                            <span>${translations[currentLanguage].favorite}:</span>
+                            <button class="favorite-btn ${favorites[item.id] ? 'favorited' : ''}" data-id="${item.id}">
+                                ${favorites[item.id] ? '♥' : '♡'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to the favorite button
+                const favBtn = productCard.querySelector('.favorite-btn');
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(item.id);
+                });
+                
+                // Add click event to the product image
+                const productImage = productCard.querySelector('.product-image');
+                productImage.addEventListener('click', () => {
+                    openImageModal(item.image);
+                });
+                
+                grid.appendChild(productCard);
+            });
+            
+            contentDisplay.appendChild(grid);
+        }
+        
+        // =============================================
+        // IMAGE MODAL FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Opens the image modal with the selected image
+         * @param {string} imageSrc - The source of the image to display
+         */
+        function openImageModal(imageSrc) {
+            // Store current scroll position
+            scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+            
+            modalImage.src = imageSrc;
+            modalImage.style.transform = 'scale(1) rotate(0deg)';
+            imageModal.classList.add('show');
+            document.body.classList.add('modal-open');
+        }
+        
+        /**
+         * Closes the image modal
+         */
+        function closeImageModal() {
+            imageModal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+            
+            // Restore scroll position
+            window.scrollTo(0, scrollPosition);
+        }
+        
+        /**
+         * Sets up image zoom and rotate functionality
+         */
+        function setupImageZoom() {
+            let scale = 1;
+            let rotation = 0;
+            
+            // Zoom in
+            zoomIn.addEventListener('click', function() {
+                scale += 0.2;
+                modalImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+            });
+            
+            // Zoom out
+            zoomOut.addEventListener('click', function() {
+                if (scale > 0.5) {
+                    scale -= 0.2;
+                    modalImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+                }
+            });
+            
+            // Reset zoom
+            resetZoom.addEventListener('click', function() {
+                scale = 1;
+                rotation = 0;
+                modalImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+            });
+            
+            // Rotate left
+            rotateLeft.addEventListener('click', function() {
+                rotation -= 90;
+                modalImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+            });
+            
+            // Rotate right
+            rotateRight.addEventListener('click', function() {
+                rotation += 90;
+                modalImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', closeImageModal);
+            
+            // Close when clicking outside the image
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    closeImageModal();
+                }
+            });
+            
+            // Zoom with mouse wheel
+            modalImage.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    // Zoom in
+                    scale += 0.1;
+                } else {
+                    // Zoom out
+                    if (scale > 0.5) {
+                        scale -= 0.1;
+                    }
+                }
+                modalImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+            });
+        }
+        
+        // =============================================
+        // SEARCH FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Handles the search functionality when the search button is clicked.
+         */
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                displayAllProducts();
+                return;
+            }
+            
+            contentDisplay.innerHTML = '';
+            
+            let hasResults = false;
+            let allMatchingItems = [];
+            
+            // Search through all categories
+            for (const category in websiteContent) {
+                const matchingItems = websiteContent[category].filter(item => 
+                    item.name.toLowerCase().includes(searchTerm) || 
+                    category.toLowerCase().includes(searchTerm)
+                );
+                
+                if (matchingItems.length > 0) {
+                    hasResults = true;
+                    allMatchingItems = allMatchingItems.concat(matchingItems);
+                }
+            }
+            
+            // Display all matching items together
+            if (hasResults) {
+                createProductsGrid(translations[currentLanguage].searchResults || 'Search Results', allMatchingItems);
+            } else {
+                contentDisplay.innerHTML = `<p class="no-results">${translations[currentLanguage].noResults}</p>`;
+            }
+        }
+        
+        // =============================================
+        // CONTACT PAGE FUNCTIONALITY
+        // =============================================
+        
+        /**
+         * Shows the contact page
+         */
+        function showContactPage() {
+            // Hide main content
+            document.querySelector('.container').style.display = 'none';
+            // Show contact page
+            contactPage.style.display = 'block';
+            // Update translations
+            translatePage();
+        }
+        
+        /**
+         * Hides the contact page and shows main content
+         */
+        function hideContactPage() {
+            contactPage.style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+        
+        // =============================================
+        // EVENT LISTENER SETUP
+        // =============================================
+        
+        /**
+         * Sets up all event listeners for the website.
+         */
+        function setupEventListeners() {
+            // Language switcher
+            setupLanguageSwitcher();
+            
+            // Tab functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', handleTabClick);
+            });
+            
+            // Search functionality
+            searchButton.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+            
+            // Contact information
+            contactBtn.addEventListener('click', showContactPage);
+            
+            // Back button
+            backButton.addEventListener('click', hideContactPage);
+            
+            // Image modal functionality
+            setupImageZoom();
+        }
+        
+        // =============================================
+        // INITIALIZE THE WEBSITE WHEN THE PAGE LOADS
+        // =============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the website
+            initializeWebsite();
+        });
+    </script>
+</body>
+</html>
